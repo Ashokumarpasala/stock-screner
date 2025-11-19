@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width,initial-scale=1,user-scalable=no"
+		/>
+		<title>CSV Screener — 5min Entry + P&L Simulation (₹40,000 capital)</title>
+
+		<!-- libs -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.32/jspdf.plugin.autotable.min.js"></script>
+		<link rel="stylesheet" href="index.css" />
+	</head>
+	<body>
+		<h2>📊 CSV Screener — 5min Entry + P&L Simulation (₹40,000 capital)</h2>
+
+		<div id="instructions">
+			<b>Use:</b> Upload CSV → Click "Full Screener" → script finds
+			Open=High/Open=Low stocks → selects highest-volume first 5-min candle per
+			side → computes entry = 40% retrace, stop = Entry ±1% (risk), target =
+			Entry ±1.5% (reward) → simulates trade using subsequent candles → updates
+			P&L and capital.
+			<div style="margin-top: 6px; font-size: 13px">
+				Required columns (case-insensitive):
+				<em
+					>Symbol, Date, Time, Open, High, Low, Close, Volume, Avg Volume (5d),
+					Market Cap</em
+				>
+			</div>
+		</div>
+
+		<div class="row">
+			<input type="file" id="csvFile" accept=".csv,text/csv" />
+			<button onclick="loadCSV()">📤 Load CSV</button>
+
+			<div style="display: flex; gap: 6px; align-items: center">
+				<label style="font-size: 13px">Min Gain % (optional)</label>
+				<input
+					type="number"
+					id="minGain"
+					value="0.0"
+					step="0.1"
+					min="0"
+					style="width: 90px"
+				/>
+			</div>
+
+			<button onclick="downloadCSV()" id="downloadBtn" style="display: none">
+				⬇️ Download CSV
+			</button>
+			<button onclick="downloadPDF()" id="pdfBtn" style="display: none">
+				⬇️ Download PDF
+			</button>
+		</div>
+
+		<div id="filterSection">
+			<div id="filterButtons" class="row">
+				<button class="secondary" onclick="applyPredefinedFilter('openLow')">
+					Open = Low
+				</button>
+				<button class="secondary" onclick="applyPredefinedFilter('openHigh')">
+					Open = High
+				</button>
+				<button
+					class="secondary"
+					onclick="applyPredefinedFilter('openHighLow')"
+				>
+					Open = High = Low
+				</button>
+				<button onclick="applyPredefinedFilter('full')">
+					Apply Full Screener (with 5min entry + simulation)
+				</button>
+				<button class="danger" onclick="clearFilter()">Clear</button>
+			</div>
+			<div
+				id="filterInfo"
+				style="margin-top: 6px; color: #555; font-style: italic"
+			></div>
+		</div>
+
+		<div id="tableContainer"><p>No data loaded.</p></div>
+
+		<div id="plPanel">
+			<h4>
+				Trade Simulation & P&L (Capital = ₹40,000; Risk per trade = 1% of
+				capital)
+			</h4>
+			<div id="plContent"></div>
+			<div id="plSummary"></div>
+			<div style="margin-top: 8px; font-size: 13px; color: #555">
+				Notes:
+				<ul>
+					<li>Entry = 40% retrace of first 5-min candle range.</li>
+					<li>Stop = Entry ± 1% of Entry. Target = Entry ± 1.5% of Entry.</li>
+					<li>
+						Position size = floor(riskPerTrade / riskPerShare), minimum 1 share.
+					</li>
+					<li>
+						Simulation scans subsequent intraday candles for the same date &
+						symbol; if neither TP nor SL hit, MTM is computed using the last
+						available close.
+					</li>
+					<li>
+						If TP and SL occur within the same candle, order is inferred from
+						the candle's open/close (bullish candle implies low happened earlier
+						than high, etc.).
+					</li>
+				</ul>
+			</div>
+		</div>
+		<script src="index.js"></script>
+	</body>
+</html>

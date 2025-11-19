@@ -1,0 +1,169 @@
+body {
+	font-family: Arial, sans-serif;
+	margin: 10px;
+	background: #f8f9fa;
+	color: #222;
+}
+
+h2 {
+	text-align: center;
+	margin: 6px 0 12px;
+}
+
+#instructions {
+	background: #e3f2fd;
+	padding: 10px;
+	border-radius: 8px;
+	margin-bottom: 10px;
+}
+
+.row {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+input[type="file"],
+button,
+input[type="number"] {
+	padding: 10px;
+	border-radius: 6px;
+	font-size: 14px;
+}
+
+button {
+	border: none;
+	background: #1976d2;
+	color: #fff;
+	cursor: pointer;
+}
+
+button.secondary {
+	background: #4caf50;
+}
+
+button.danger {
+	background: #f44336;
+}
+
+#filterButtons {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+#tableContainer {
+	max-height: 48vh;
+	/* Added overflow-y for desktop vertical scrolling */
+	overflow-y: auto;
+	overflow-x: hidden;
+	background: #fff;
+	border-radius: 8px;
+	padding: 6px;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+	/* Changed to auto for better column sizing on long numbers */
+	table-layout: auto;
+}
+
+th,
+td {
+	border: 1px solid #ddd;
+	padding: 6px;
+	/* Removed text-overflow: ellipsis; to prevent truncation */
+	white-space: nowrap;
+	text-align: left;
+}
+
+th {
+	background: #f1f1f1;
+	position: sticky;
+	top: 0;
+	z-index: 6;
+}
+
+/* === Row Highlighting Styles === */
+tr.highlight-buy {
+	background-color: #e6ffe6; /* Light Green */
+	font-weight: bold;
+	border: 2px solid #0b6623;
+}
+
+tr.highlight-sell {
+	background-color: #ffe6e6; /* Light Red */
+	font-weight: bold;
+	border: 2px solid #b71c1c;
+}
+
+td.symbol-cell {
+	background: #e3f2fd;
+	color: #1976d2;
+	font-weight: 700;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.label-buy {
+	color: #0b6623;
+	font-weight: 700;
+}
+
+.label-sell {
+	color: #b71c1c;
+	font-weight: 700;
+}
+
+#plPanel {
+	margin-top: 12px;
+	background: #fff;
+	padding: 10px;
+	border-radius: 8px;
+	display: none;
+}
+
+#plSummary {
+	margin-top: 8px;
+	font-weight: 700;
+}
+
+@media (min-width: 600px) {
+	input[type="file"] {
+		width: auto;
+	}
+	button {
+		width: auto;
+	}
+}
+
+/* 🚀 Mobile View Fixes (Max Width 768px) */
+@media (max-width: 768px) {
+	.mobile-hide {
+		display: none !important;
+	}
+
+	/* Key change: Enable horizontal scrolling for the table container */
+	#tableContainer {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch; /* Improves scrolling on iOS */
+		max-height: 50vh;
+	}
+
+	table {
+		/* Prevents table from strictly adhering to 100% width, allowing scroll */
+		width: auto;
+		min-width: 100%;
+	}
+
+	th,
+	td {
+		/* Ensures numbers have enough room and forces horizontal scroll */
+		min-width: 90px;
+		box-sizing: border-box;
+	}
+}
