@@ -132,6 +132,16 @@ td.symbol-cell {
 	font-weight: 700;
 }
 
+.symbol-link {
+	color: blue;
+	font-weight: bold;
+	cursor: pointer;
+	text-decoration: underline;
+}
+.symbol-link:hover {
+	color: darkblue;
+}
+
 @media (min-width: 600px) {
 	input[type="file"] {
 		width: auto;

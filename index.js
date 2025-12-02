@@ -86,21 +86,32 @@ function renderTable() {
 
 	filteredData.forEach((r, i) => {
 		html += "<tr>";
-		// Iterate over the restricted list of headers
 		currentDisplayHeaders.forEach((h) => {
 			const val = r[h] ?? "";
 			let cls = "";
-			if (normalize(h).includes("symbol")) cls = "symbol-cell";
 			let cell = val;
+
+			if (normalize(h).includes("symbol")) {
+				cls = "symbol-cell";
+				const sym = String(val).trim().toUpperCase();
+				const tvUrl = `https://in.tradingview.com/symbols/NSE-${encodeURIComponent(
+					sym
+				)}/`;
+				cell = `<a href="${tvUrl}" target="_blank" class="symbol-link">${escapeHtml(
+					sym
+				)}</a>`;
+			}
+
 			if (normalize(h) === "label") {
 				if (String(val).toLowerCase() === "buy")
 					cell = `<span class="label-buy">BUY</span>`;
 				if (String(val).toLowerCase() === "sell")
 					cell = `<span class="label-sell">SELL</span>`;
 			}
+
 			html += `<td class="${cls}" data-row="${i}" data-col="${encodeURIComponent(
 				h
-			)}">${escapeHtml(cell)}</td>`;
+			)}">${cell}</td>`;
 		});
 		html += "</tr>";
 	});
