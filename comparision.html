@@ -1,106 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>CSV Stock Name Comparator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-    h2 {
-      margin-bottom: 10px;
-    }
-    input {
-      margin-bottom: 15px;
-    }
-    button {
-      padding: 8px 16px;
-      cursor: pointer;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #fff;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background: #eee;
-    }
-  </style>
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8" />
+		<title>CSV Stock Name Comparator</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				padding: 20px;
+				background: #f5f5f5;
+			}
+			h2 {
+				margin-bottom: 10px;
+			}
+			input {
+				margin-bottom: 15px;
+			}
+			button {
+				padding: 8px 16px;
+				cursor: pointer;
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				margin-top: 20px;
+				background: #fff;
+			}
+			th,
+			td {
+				border: 1px solid #ccc;
+				padding: 8px;
+				text-align: left;
+			}
+			th {
+				background: #eee;
+			}
+		</style>
+	</head>
+	<body>
+		<h2>Compare Two CSV Files (Same Stock Names)</h2>
+		<hr />
+		<a href="home.html">Go to the home page</a>
+		<a href="index.html">Go to the stock screener page</a>
+		<hr />
 
-  <h2>Compare Two CSV Files (Same Stock Names)</h2>
+		<input type="file" id="file1" accept=".csv" /><br />
+		<input type="file" id="file2" accept=".csv" /><br />
 
-  <input type="file" id="file1" accept=".csv"><br>
-  <input type="file" id="file2" accept=".csv"><br>
+		<button onclick="compareCSV()">Compare</button>
 
-  <button onclick="compareCSV()">Compare</button>
+		<table id="resultTable" style="display: none">
+			<thead>
+				<tr>
+					<th>Common Stock Names</th>
+				</tr>
+			</thead>
+			<tbody id="resultBody"></tbody>
+		</table>
 
-  <table id="resultTable" style="display:none;">
-    <thead>
-      <tr>
-        <th>Common Stock Names</th>
-      </tr>
-    </thead>
-    <tbody id="resultBody"></tbody>
-  </table>
+		<script>
+			function readCSV(file) {
+				return new Promise((resolve) => {
+					const reader = new FileReader();
+					reader.onload = (e) => {
+						const rows = e.target.result.split("\n").map((r) => r.trim());
+						const headers = rows[0].split(",");
+						const stockIndex = headers.findIndex(
+							(h) => h.trim().toLowerCase() === "stock name"
+						);
 
-<script>
-function readCSV(file) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const rows = e.target.result.split("\n").map(r => r.trim());
-      const headers = rows[0].split(",");
-      const stockIndex = headers.findIndex(h => h.trim().toLowerCase() === "stock name");
+						const stocks = rows
+							.slice(1)
+							.map((r) => r.split(",")[stockIndex])
+							.filter(Boolean)
+							.map((s) => s.trim().toUpperCase());
 
-      const stocks = rows.slice(1)
-        .map(r => r.split(",")[stockIndex])
-        .filter(Boolean)
-        .map(s => s.trim().toUpperCase());
+						resolve(new Set(stocks));
+					};
+					reader.readAsText(file);
+				});
+			}
 
-      resolve(new Set(stocks));
-    };
-    reader.readAsText(file);
-  });
-}
+			async function compareCSV() {
+				const f1 = document.getElementById("file1").files[0];
+				const f2 = document.getElementById("file2").files[0];
 
-async function compareCSV() {
-  const f1 = document.getElementById("file1").files[0];
-  const f2 = document.getElementById("file2").files[0];
+				if (!f1 || !f2) {
+					alert("Please upload both CSV files");
+					return;
+				}
 
-  if (!f1 || !f2) {
-    alert("Please upload both CSV files");
-    return;
-  }
+				const stocks1 = await readCSV(f1);
+				const stocks2 = await readCSV(f2);
 
-  const stocks1 = await readCSV(f1);
-  const stocks2 = await readCSV(f2);
+				const commonStocks = [...stocks1].filter((s) => stocks2.has(s));
 
-  const commonStocks = [...stocks1].filter(s => stocks2.has(s));
+				const table = document.getElementById("resultTable");
+				const tbody = document.getElementById("resultBody");
+				tbody.innerHTML = "";
 
-  const table = document.getElementById("resultTable");
-  const tbody = document.getElementById("resultBody");
-  tbody.innerHTML = "";
+				commonStocks.forEach((stock) => {
+					const tr = document.createElement("tr");
+					tr.innerHTML = `<td>${stock}</td>`;
+					tbody.appendChild(tr);
+				});
 
-  commonStocks.forEach(stock => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${stock}</td>`;
-    tbody.appendChild(tr);
-  });
-
-  table.style.display = "table";
-}
-</script>
-
-</body>
+				table.style.display = "table";
+			}
+		</script>
+	</body>
 </html>
