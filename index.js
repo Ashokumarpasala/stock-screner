@@ -253,7 +253,7 @@ function applyPredefinedFilter(type) {
 		);
 	}
 
-	const minGain = Number(document.getElementById("minGain").value || 0) / 100;
+	const minGain = Number(document.getElementById("minGain").value || 0) / 100;	
 
 	// Reset filteredData and Label
 	filteredData = csvData.map((r) => ({ ...r, Label: "" }));
